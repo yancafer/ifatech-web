@@ -1,5 +1,15 @@
 .container-menu-component {
     background-color: #EFEFEF;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 5rem;
+}
+
+.img-menu {
+    margin-left: 1rem;
+    width: 3rem;
 }
 
 .menu-container {

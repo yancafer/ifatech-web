@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../connections/supabaseClient"; // Importando a conexão do Supabase
 import "./menu.css";
+import LogoIfac from '../assets/ifacLogo.png';
 
 function Menu() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ function Menu() {
 
   return (
     <div className="container-menu-component">
+      <img src={LogoIfac} alt="Logo" className="img-menu"/>
       <ul className="menu-container">
         <li>
           <Link className="menu-font" to="/reports">
