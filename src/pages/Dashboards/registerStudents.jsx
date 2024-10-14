@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { supabase } from "../../connections/supabaseClient"; // Importar a instância única do Supabase
+import { supabase } from "../../connections/supabaseClient";
+import * as XLSX from "xlsx"; // Importar a biblioteca XLSX
 
 const RegisterStudents = () => {
   const [nome, setNome] = useState("");
+  const [curso, setCurso] = useState("");
   const [serie, setSerie] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
@@ -14,10 +16,11 @@ const RegisterStudents = () => {
     e.preventDefault();
 
     try {
-      // Inserção de estudante no Supabase (sem o campo 'Curso')
+      // Inserção de estudante no Supabase
       const { data, error } = await supabase.from("students").insert([
         {
           Nome: nome,
+          Curso: curso,
           Série: serie,
           Telefone: telefone,
           Email: email,
@@ -37,16 +40,24 @@ const RegisterStudents = () => {
     }
   };
 
-  // Função para processar o arquivo CSV
+  // Função para processar o arquivo XLSX
   const processFile = async (file) => {
     try {
-      const text = await file.text();
-      const students = CSVToJSON(text); // Função para converter CSV para JSON
+      const reader = new FileReader();
 
-      // Para cada aluno na planilha, chamamos o handleUploadCSV para inseri-lo no banco
-      for (const student of students) {
-        await handleUploadCSV(student);
-      }
+      reader.onload = (event) => {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+        // Para cada aluno na planilha, chamamos o handleUploadCSV para inseri-lo no banco
+        for (const student of worksheet) {
+          handleUploadCSV(student);
+        }
+      };
+
+      reader.readAsArrayBuffer(file); // Lê o arquivo XLSX como array buffer
 
       alert("Planilha processada com sucesso!");
     } catch (error) {
@@ -54,12 +65,13 @@ const RegisterStudents = () => {
     }
   };
 
-  // Função para inserir estudantes do CSV no Supabase
+  // Função para inserir estudantes do XLSX no Supabase
   const handleUploadCSV = async (student) => {
     try {
       const { data, error } = await supabase.from("students").insert([
         {
           Nome: student.Nome,
+          Curso: student.Curso,
           Série: student.Série,
           Telefone: student.Telefone,
           Email: student.Email,
@@ -70,25 +82,8 @@ const RegisterStudents = () => {
       if (error) throw error;
       console.log("Estudante inserido com sucesso:", data);
     } catch (error) {
-      console.error("Erro ao inserir estudante do CSV:", error.message);
+      console.error("Erro ao inserir estudante do XLSX:", error.message);
     }
-  };
-
-  // Função para converter CSV em JSON
-  const CSVToJSON = (csv) => {
-    const lines = csv.split("\n");
-    const headers = lines[0].split(",");
-
-    const result = lines.slice(1).map((line) => {
-      const values = line.split(",");
-      let obj = {};
-      headers.forEach((header, index) => {
-        obj[header.trim()] = values[index].trim();
-      });
-      return obj;
-    });
-
-    return result;
   };
 
   return (
@@ -103,6 +98,19 @@ const RegisterStudents = () => {
             onChange={(e) => setNome(e.target.value)}
             required
           />
+        </div>
+        <div>
+          <label>Curso:</label>
+          <select
+            value={curso}
+            onChange={(e) => setCurso(e.target.value)}
+            required
+          >
+            <option value="">Selecione o curso</option>
+            <option value="Biotecnologia">Biotecnologia</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Agropecuária">Agropecuária</option>
+          </select>
         </div>
         <div>
           <label>Série:</label>
@@ -143,10 +151,10 @@ const RegisterStudents = () => {
         <button type="submit">Cadastrar Estudante</button>
       </form>
 
-      <h3>Ou faça upload de uma planilha CSV</h3>
+      <h3>Ou faça upload de uma planilha XLSX</h3>
       <input
         type="file"
-        accept=".csv"
+        accept=".xlsx"
         onChange={(e) => setFile(e.target.files[0])}
       />
       <button onClick={() => processFile(file)}>Processar Planilha</button>
