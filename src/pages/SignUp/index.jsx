@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../connections/firebaseConnections";
+import { supabase } from "../../connections/supabaseClient"; // conexão com o Supabase
 import { useNavigate } from "react-router-dom";
 
 function SignUp() {
@@ -33,21 +32,24 @@ function SignUp() {
       return;
     }
 
-    // Se as validações passarem, tente criar o usuário
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        setEmail(""); // Limpar campos após criação
-        setPassword("");
-        setError(""); // Limpar qualquer erro anterior
+    // Se as validações passarem, tente criar o usuário no Supabase
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-        console.log("Usuário criado com sucesso");
+    if (error) {
+      setError("Erro ao criar usuário: " + error.message);
+    } else {
+      setEmail(""); // Limpar campos após criação
+      setPassword("");
+      setError(""); // Limpar qualquer erro anterior
 
-        // Redirecionar para a página de login após sucesso
-        navigate("/login");
-      })
-      .catch((error) => {
-        setError("Erro ao criar usuário: " + error.message);
-      });
+      console.log("Usuário criado com sucesso");
+
+      // Redirecionar para a página de login após sucesso
+      navigate("/login");
+    }
   }
 
   return (
