@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { supabase } from "../../connections/supabaseClient"; // conexão com o Supabase
+import { supabase } from "../../connections/supabaseClient"; // Conexão com o Supabase
 import { useNavigate } from "react-router-dom";
 
 function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(""); // Para exibir erros
+  const [loading, setLoading] = useState(false); // Para exibir um loader
   const navigate = useNavigate();
 
   // Função para validar o formato do email
@@ -16,12 +17,10 @@ function SignUp() {
 
   // Função para validar os requisitos da senha
   const validatePassword = (password) => {
-    // A senha deve ter no mínimo 6 caracteres
-    return password.length >= 6;
+    return password.length >= 6; // A senha deve ter no mínimo 6 caracteres
   };
 
   async function newUser() {
-    // Validações de email e senha
     if (!validateEmail(email)) {
       setError("Email inválido!");
       return;
@@ -32,30 +31,51 @@ function SignUp() {
       return;
     }
 
-    // Se as validações passarem, tente criar o usuário no Supabase
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    setLoading(true);
 
-    if (error) {
-      setError("Erro ao criar usuário: " + error.message);
-    } else {
-      setEmail(""); // Limpar campos após criação
+    try {
+      // Criar o usuário admin no Supabase
+      const { data: user, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      // Após criar o usuário, inserir o perfil com o papel "admin"
+      const { error: profileError } = await supabase.from("profiles").insert([
+        {
+          id: user.user.id,
+          role: "admin", // O novo usuário será admin
+          email: email, // Atribuir o email diretamente
+        },
+      ]);
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      setEmail("");
       setPassword("");
-      setError(""); // Limpar qualquer erro anterior
+      setError("");
 
-      console.log("Usuário criado com sucesso");
-
-      // Redirecionar para a página de login após sucesso
-      navigate("/login");
+      console.log("Admin criado com sucesso");
+      navigate("/login"); // Redirecionar após o registro
+    } catch (error) {
+      setError("Erro ao registrar: " + error.message);
+      console.error("Erro ao registrar usuário:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div>
-      <h1>Criar Conta</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>} {/* Exibir erros */}
+      <h1>Criar Conta de Admin</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {loading && <p style={{ color: "blue" }}>Criando conta...</p>}{" "}
       <div>
         <label>Email</label>
         <input
@@ -64,7 +84,6 @@ function SignUp() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Digite seu email"
         />
-
         <label>Senha</label>
         <input
           type="password"
@@ -72,8 +91,9 @@ function SignUp() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Digite sua senha"
         />
-
-        <button onClick={newUser}>Criar Conta</button>
+        <button onClick={newUser} disabled={loading}>
+          Criar Conta
+        </button>
       </div>
     </div>
   );
