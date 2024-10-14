@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { auth } from "../connections/firebaseConnections";
-import { onAuthStateChanged } from "firebase/auth";
 import { Navigate } from "react-router-dom";
+import { supabase } from "../connections/supabaseClient"; // Conexão com Supabase
 import Menu from "../components/Menu";
 
 export default function Private({ children }) {
@@ -10,30 +9,30 @@ export default function Private({ children }) {
 
   useEffect(() => {
     async function checkLogin() {
-      const unsub = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          const userData = {
-            uid: user.uid,
-            email: user.email,
-          };
+      // Verifica o estado de autenticação do usuário no Supabase
+      const { data: { session } } = await supabase.auth.getSession();
 
-          localStorage.setItem("@detailUser", JSON.stringify(userData));
+      if (session) {
+        // Usuário autenticado, salvar informações no localStorage se necessário
+        const userData = {
+          uid: session.user.id,
+          email: session.user.email,
+        };
+        localStorage.setItem("@detailUser", JSON.stringify(userData));
 
-          setLoading(false);
-          setSigned(true);
-        } else {
-          setLoading(false);
-          setSigned(false);
-        }
-      });
+        setSigned(true);
+      } else {
+        setSigned(false);
+      }
+      
+      setLoading(false);
     }
+
     checkLogin();
   }, []);
 
   if (loading) {
-    return (
-      <div>Carregando...</div>
-    );
+    return <div>Carregando...</div>;
   }
 
   if (!signed) {
