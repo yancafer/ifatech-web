@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../connections/firebaseConnections";
+import { supabase } from "../../connections/supabaseClient"; // conexão com o Supabase
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -33,19 +32,22 @@ function Login() {
       return;
     }
 
-    // Se as validações passarem, tente fazer o login
-    await signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        setEmail(""); // Limpar campos após login
-        setPassword("");
-        setError(""); // Limpar qualquer erro anterior
+    // Se as validações passarem, tente fazer o login no Supabase
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-        // Redirecionar para a dashboard
-        navigate("/reports");
-      })
-      .catch(() => {
-        setError("Email ou senha inválidos");
-      });
+    if (error) {
+      setError("Email ou senha inválidos");
+    } else {
+      setEmail(""); // Limpar campos após login
+      setPassword("");
+      setError(""); // Limpar qualquer erro anterior
+
+      // Redirecionar para a dashboard
+      navigate("/reports");
+    }
   }
 
   return (
