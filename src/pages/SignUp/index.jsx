@@ -44,10 +44,19 @@ function SignUp() {
         throw signUpError;
       }
 
+      // Garantir que o usuário foi criado
+      const userId = user?.user?.id;
+      if (!userId) {
+        throw new Error("Falha ao criar usuário.");
+      }
+
+      // Esperar alguns segundos para garantir que o ID foi propagado para a tabela `users`
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       // Após criar o usuário, inserir o perfil com o papel "admin"
       const { error: profileError } = await supabase.from("profiles").insert([
         {
-          id: user.user.id,
+          id: userId, // Usar o ID gerado do usuário
           role: "admin", // O novo usuário será admin
           email: email, // Atribuir o email diretamente
         },
@@ -57,6 +66,7 @@ function SignUp() {
         throw profileError;
       }
 
+      // Limpar os campos após a criação bem-sucedida
       setEmail("");
       setPassword("");
       setError("");

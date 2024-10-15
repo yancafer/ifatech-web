@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { supabase } from "../../connections/supabaseClient";
-import * as XLSX from "xlsx"; // Importar a biblioteca XLSX
+import * as XLSX from "xlsx";
+import QRCode from "qrcode";
+import axios from "axios";
 
 const RegisterStudents = () => {
   const [nome, setNome] = useState("");
@@ -11,12 +13,40 @@ const RegisterStudents = () => {
   const [matricula, setMatricula] = useState("");
   const [file, setFile] = useState(null);
 
-  // Função para inserir o estudante no Supabase
+  const generateQRCodeAndUpload = async (matricula) => {
+    try {
+      const matriculaString = String(matricula);
+      const qrCodeDataURL = await QRCode.toDataURL(matriculaString);
+      const cloudinaryUploadURL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
+      const cloudinaryUploadPreset = import.meta.env
+        .VITE_CLOUDINARY_UPLOAD_PRESET;
+      const formData = new FormData();
+      const byteString = atob(qrCodeDataURL.split(",")[1]);
+      const mimeString = qrCodeDataURL
+        .split(",")[0]
+        .split(":")[1]
+        .split(";")[0];
+      const byteArray = new Uint8Array(byteString.length);
+      for (let i = 0; i < byteString.length; i++) {
+        byteArray[i] = byteString.charCodeAt(i);
+      }
+      const qrBlob = new Blob([byteArray], { type: mimeString });
+
+      formData.append("file", qrBlob);
+      formData.append("upload_preset", cloudinaryUploadPreset);
+
+      const response = await axios.post(cloudinaryUploadURL, formData);
+      return response.data.secure_url;
+    } catch (error) {
+      console.error("Erro ao gerar ou fazer upload do QR code:", error);
+      throw error;
+    }
+  };
+
   const handleUpload = async (e) => {
     e.preventDefault();
-
     try {
-      // Inserção de estudante no Supabase
+      const qrCodeURL = await generateQRCodeAndUpload(matricula);
       const { data, error } = await supabase.from("students").insert([
         {
           Nome: nome,
@@ -25,49 +55,43 @@ const RegisterStudents = () => {
           Telefone: telefone,
           Email: email,
           Matrícula: matricula,
+          qr_code_url: qrCodeURL,
         },
       ]);
-
       if (error) {
         throw error;
       }
-
-      console.log("Estudante cadastrado com sucesso:", data);
       alert("Estudante cadastrado com sucesso!");
     } catch (error) {
-      console.error("Erro ao cadastrar estudante:", error.message);
       alert(`Erro: ${error.message}`);
     }
   };
 
-  // Função para processar o arquivo XLSX
   const processFile = async (file) => {
     try {
       const reader = new FileReader();
-
       reader.onload = (event) => {
         const data = new Uint8Array(event.target.result);
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
-        // Para cada aluno na planilha, chamamos o handleUploadCSV para inseri-lo no banco
         for (const student of worksheet) {
           handleUploadCSV(student);
         }
       };
-
-      reader.readAsArrayBuffer(file); // Lê o arquivo XLSX como array buffer
-
+      reader.readAsArrayBuffer(file);
       alert("Planilha processada com sucesso!");
     } catch (error) {
       console.error("Erro ao processar a planilha:", error.message);
     }
   };
 
-  // Função para inserir estudantes do XLSX no Supabase
   const handleUploadCSV = async (student) => {
     try {
+      if (!student.Matrícula) {
+        throw new Error("Matrícula inválida ou vazia");
+      }
+      const qrCodeURL = await generateQRCodeAndUpload(student.Matrícula);
       const { data, error } = await supabase.from("students").insert([
         {
           Nome: student.Nome,
@@ -76,11 +100,10 @@ const RegisterStudents = () => {
           Telefone: student.Telefone,
           Email: student.Email,
           Matrícula: student.Matrícula,
+          qr_code_url: qrCodeURL,
         },
       ]);
-
       if (error) throw error;
-      console.log("Estudante inserido com sucesso:", data);
     } catch (error) {
       console.error("Erro ao inserir estudante do XLSX:", error.message);
     }
@@ -151,13 +174,15 @@ const RegisterStudents = () => {
         <button type="submit">Cadastrar Estudante</button>
       </form>
 
-      <h3>Ou faça upload de uma planilha XLSX</h3>
+      <h2>Upload da Planilha de Estudantes</h2>
       <input
         type="file"
-        accept=".xlsx"
+        accept=".xlsx, .xls"
         onChange={(e) => setFile(e.target.files[0])}
       />
-      <button onClick={() => processFile(file)}>Processar Planilha</button>
+      {file && (
+        <button onClick={() => processFile(file)}>Processar Planilha</button>
+      )}
     </div>
   );
 };
