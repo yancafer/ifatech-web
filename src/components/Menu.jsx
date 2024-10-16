@@ -1,32 +1,52 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { auth } from "../connections/firebaseConnections";
-import { signOut } from "firebase/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../connections/supabaseClient"; // Importando a conexão do Supabase
 import "./menu.css";
+import LogoIfac from '../assets/ifacLogo.png';
 
 function Menu() {
+  const navigate = useNavigate();
 
   async function handleLogout() {
-    await signOut(auth);
+    // Realiza o logout utilizando o método do Supabase
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.log("Erro ao fazer logout:", error.message);
+    } else {
+      // Redireciona para a página de login após o logout
+      navigate("/login");
+    }
   }
 
   return (
     <div className="container-menu-component">
+      <img src={LogoIfac} alt="Logo" className="img-menu"/>
       <ul className="menu-container">
         <li>
-          <Link className="menu-font" to="/reports">Relatórios</Link>
+          <Link className="menu-font" to="/reports">
+            Relatórios
+          </Link>
         </li>
         <li>
-          <Link className="menu-font" to="/checkqrcode">Verificar QR Code</Link>
+          <Link className="menu-font" to="/checkqrcode">
+            Verificar QR Code
+          </Link>
         </li>
         <li>
-          <Link className="menu-font" to="/filesstudents">Registros</Link>
+          <Link className="menu-font" to="/filesstudents">
+            Registros
+          </Link>
         </li>
         <li>
-          <Link className="menu-font" to="/registerstudets">Cadastrar</Link>
+          <Link className="menu-font" to="/registerstudets">
+            Cadastrar
+          </Link>
         </li>
         <li>
-          <Link onClick={handleLogout} className="menu-font">Sair</Link>
+          <Link onClick={handleLogout} className="menu-font">
+            Sair
+          </Link>
         </li>
       </ul>
     </div>

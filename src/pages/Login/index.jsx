@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../connections/firebaseConnections";
+import { supabase } from "../../connections/supabaseClient"; // Conexão com o Supabase
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import './login.css'; // Estilos personalizados
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // Estado de carregamento
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -33,44 +36,73 @@ function Login() {
       return;
     }
 
-    // Se as validações passarem, tente fazer o login
-    await signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        setEmail(""); // Limpar campos após login
-        setPassword("");
-        setError(""); // Limpar qualquer erro anterior
+    setLoading(true); // Mostrar loader
 
-        // Redirecionar para a dashboard
-        navigate("/reports");
-      })
-      .catch(() => {
-        setError("Email ou senha inválidos");
-      });
+    // Tentar fazer o login no Supabase
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setLoading(false); // Ocultar loader em caso de erro
+      setError("Email ou senha inválidos");
+      toast.error("Erro ao fazer login!");
+    } else {
+      setEmail(""); // Limpar campos após login
+      setPassword("");
+      setError(""); // Limpar qualquer erro anterior
+
+      toast.success("Login bem-sucedido!");
+
+      setTimeout(() => {
+        navigate("/reports"); // Redirecionar após o login
+      }, 1000); // Aguardar 2 segundos para mostrar o loader e o toast
+    }
   }
 
   return (
     <div>
-      <h1>Login</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>} {/* Exibir erros */}
-      <div>
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Digite seu email"
-        />
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
 
-        <label>Senha</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Digite sua senha"
-        />
+      {loading ? (
+        <div className="loader"></div> // Exibir apenas o loader durante o login
+      ) : (
+        <div className="login-container">
+          <h1>Login</h1>
+          {error && <p style={{ color: "red" }}>{error}</p>} {/* Exibir erros */}
+          <div>
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Digite seu email"
+            />
 
-        <button onClick={loginUser}>Entrar</button>
-      </div>
+            <label>Senha</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Digite sua senha"
+            />
+
+            <button onClick={loginUser}>Entrar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
