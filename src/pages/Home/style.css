@@ -1,21 +1,106 @@
+/* Estilos gerais */
 .container {
+    background-color: #DBDBDB;
+    height: 100vh;
     display: flex;
-    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+}
+
+.container-box {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #05032b;
+    background-color: #ECECEC;
+    padding: 2rem;
+    border-radius: 0.625rem;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.button {
-    font-size: 2rem;
-    text-decoration: none;
-    color: rgb(255, 255, 255);
+.div-home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 1.5rem;
+    align-items: center;
 }
 
-.button-space {
-    font-size: 2rem;
-    text-decoration: none;
-    margin-left: 5rem;
-    color: rgb(255, 255, 255);
+.titles-home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.button-home {
+    width: 10rem;
+    height: 2rem;
+    border: solid 1px;
+    border-radius: 4px;
+    color: #FFFFFF;
+    background-color: #344E41;
+    transition: background-color 0.5s ease, color 0.5s ease, transform 0.5s ease;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.button-home:hover {
+    background-color: #FFFFFF;
+    color: #344E41;
+    transform: scale(1.1);
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+    .container-box {
+        padding: 1.5rem;
+    }
+
+    .title {
+        font-size: 1.35rem;
+    }
+
+    .button-home {
+        width: 9rem;
+        font-size: 1rem;
+    }
+
+    h2 {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container-box {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 1.25rem;
+    }
+
+    .button-home {
+        width: 8rem;
+        font-size: 0.9rem;
+    }
+
+    h2 {
+        font-size: 0.85rem;
+    }
 }
