@@ -92,6 +92,7 @@ const CheckQRCode = () => {
           Matrícula: matricula,
           Nome: existingData.Nome,
           mensagem: "Já recebeu o lanche hoje",
+          data_recebimento: new Date(), // Adiciona a data de recebimento
         });
         continue;
       }
@@ -108,6 +109,7 @@ const CheckQRCode = () => {
             Matrícula: matricula,
             Nome: existingData.Nome,
             mensagem: "Recebido com sucesso!",
+            data_recebimento: new Date(), // Adiciona a data de recebimento
           });
           studentsBeingVerified.push(existingData);
 
@@ -124,6 +126,11 @@ const CheckQRCode = () => {
         });
       }
     }
+
+    // Ordena os alunos verificados pelo tempo de recebimento
+    newVerifiedStudents.sort((a, b) => {
+      return new Date(b.data_recebimento) - new Date(a.data_recebimento);
+    });
 
     setVerifiedStudents(newVerifiedStudents);
     localStorage.setItem(
@@ -214,7 +221,15 @@ const CheckQRCode = () => {
                 <tr key={index} className="table-row">
                   <td className="table-data">{student.Nome}</td>
                   <td className="table-data">{student.Matrícula}</td>
-                  <td className="table-data">{student.mensagem || "N/A"}</td>
+                  <td
+                    className={`table-data ${
+                      student.mensagem === "Já recebeu o lanche hoje"
+                        ? "received-today"
+                        : ""
+                    }`}
+                  >
+                    {student.mensagem || "N/A"}
+                  </td>
                 </tr>
               ))}
             </tbody>
