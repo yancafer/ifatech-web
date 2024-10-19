@@ -102,3 +102,16 @@
 .table-row:hover {
     background-color: #dddddd;
 }
+
+.received-today {
+    font-weight: bold;
+    color: red;
+  }
+
+  .table-title {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
