@@ -1,0 +1,39 @@
+/* src/pages/Report/styles/report.css */
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Centraliza verticalmente */
+    align-items: center;
+    /* Centraliza horizontalmente */
+    height: auto;
+    /* Ajusta a altura automaticamente */
+    width: 100%;
+    /* Faz a largura ocupar 100% */
+    margin: 0;
+    /* Remove margens indesejadas */
+    padding: 20px;
+    /* Adiciona preenchimento ao redor do conteúdo */
+    box-sizing: border-box;
+    /* Garante que o padding não afete a largura total */
+}
+
+.report-title {
+    margin: 20px 0;
+    /* Espaçamento ao redor do título */
+    font-size: 2rem;
+    /* Tamanho do texto do título */
+    text-align: center;
+    /* Centraliza o texto */
+}
+
+.chart {
+    position: relative;
+    width: 100%;
+    /* Faz o gráfico ocupar toda a largura */
+    height: 400px;
+    /* Altura fixa para o gráfico */
+    max-width: 800px;
+    /* Limita a largura máxima se necessário */
+}
