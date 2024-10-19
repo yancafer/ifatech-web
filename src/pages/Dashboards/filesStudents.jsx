@@ -15,7 +15,7 @@ function FilesStudents() {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const studentsPerPage = 20;
+  const studentsPerPage = 10;
 
   useEffect(() => {
     fetchStudents();
