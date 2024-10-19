@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "../../connections/supabaseClient"; // Conexão com o Supabase
 import { useNavigate } from "react-router-dom";
+import "./style.css"; // Importação do arquivo CSS
 
 function SignUp() {
   const [email, setEmail] = useState("");
@@ -82,28 +83,33 @@ function SignUp() {
   }
 
   return (
-    <div>
-      <h1>Criar Conta de Admin</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {loading && <p style={{ color: "blue" }}>Criando conta...</p>}{" "}
-      <div>
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Digite seu email"
-        />
-        <label>Senha</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Digite sua senha"
-        />
-        <button onClick={newUser} disabled={loading}>
-          Criar Conta
-        </button>
+    <div className="login-container">
+      {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+      {loading && (
+        <div className="loader"></div> // Loader estilizado
+      )}
+      <div className="login-box">
+        <h1 className="title-home">Criar Conta de Admin</h1>
+        <div className="input-login">
+          <label>Email</label>
+          <input
+            type="email"
+            className="input-email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Digite um email"
+          />
+          <label>Senha</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Digite sua melhor senha"
+          />
+          <button onClick={newUser} disabled={loading} className="button-login">
+            Criar Conta
+          </button>
+        </div>
       </div>
     </div>
   );
