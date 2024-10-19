@@ -9,6 +9,8 @@
 }
 
 .title {
+    text-align: center;
+    /* Centraliza o título */
     margin-bottom: 20px;
 }
 
@@ -26,6 +28,31 @@
     flex: 1;
 }
 
+.matricula-input-field {
+    padding: 10px;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.verify-button {
+    color: #ffffff;
+    background-color: #344e41;
+    /* Cor de fundo do botão de verificação */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.verify-button:hover {
+    background-color: #1abc9c;
+    /* Cor ao passar o mouse */
+}
+
 .manual-toggle-button {
     background-color: #344e41;
     color: #ffffff;
@@ -39,6 +66,7 @@
 
 .manual-toggle-button:hover {
     background-color: #1abc9c;
+    /* Cor ao passar o mouse */
 }
 
 .manual-mode-info {
@@ -46,27 +74,11 @@
     font-style: italic;
 }
 
-.matricula-input-field {
-    padding: 10px;
-    border: 1px solid #000000;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    width: 100%;
-}
-
-.verify-button {
-    color: #ffffff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 100%;
-}
-
 .verified-students-table {
     width: 100%;
     max-width: 1000px;
+    margin-top: 20px;
+    /* Espaço acima da tabela */
 }
 
 .table-container {
@@ -106,12 +118,13 @@
 .received-today {
     font-weight: bold;
     color: red;
-  }
+}
 
-  .table-title {
+.table-title {
     margin-top: 50px;
     margin-bottom: 20px;
     font-size: 1.5rem;
     font-weight: bold;
-  }
-  
+    text-align: center;
+    /* Centraliza o título da tabela */
+}
