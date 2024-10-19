@@ -17,13 +17,10 @@ const CheckQRCode = () => {
     const minutes = now.getMinutes();
 
     const isWeekday = day >= 1 && day <= 5;
-
     const isMorningAllowed =
       (hour === 9 && minutes >= 15) || (hour === 11 && minutes <= 59);
-
     const isAfternoonAllowed =
       hour === 15 && minutes <= 45 && day >= 1 && day <= 3;
-
     const allowed = isWeekday && (isMorningAllowed || isAfternoonAllowed);
     setIsAllowedTime(allowed);
   };
@@ -129,13 +126,10 @@ const CheckQRCode = () => {
     }
 
     setVerifiedStudents(newVerifiedStudents);
-    console.log("Alunos verificados:", newVerifiedStudents);
-
     localStorage.setItem(
       "verifiedStudents",
       JSON.stringify(newVerifiedStudents)
     );
-
     setIsLoading(false);
 
     if (studentsBeingVerified.length > 0) {
@@ -206,24 +200,26 @@ const CheckQRCode = () => {
 
       <div className="verified-students-table">
         <h3 className="table-title">Alunos Verificados</h3>
-        <table className="students-table">
-          <thead>
-            <tr>
-              <th className="table-header">Nome</th>
-              <th className="table-header">Matrícula</th>
-              <th className="table-header">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {verifiedStudents.map((student, index) => (
-              <tr key={index} className="table-row">
-                <td className="table-data">{student.Nome}</td>
-                <td className="table-data">{student.Matrícula}</td>
-                <td className="table-data">{student.mensagem || "N/A"}</td>
+        <div className="table-container">
+          <table className="students-table">
+            <thead>
+              <tr>
+                <th className="table-header">Nome</th>
+                <th className="table-header">Matrícula</th>
+                <th className="table-header">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {verifiedStudents.map((student, index) => (
+                <tr key={index} className="table-row">
+                  <td className="table-data">{student.Nome}</td>
+                  <td className="table-data">{student.Matrícula}</td>
+                  <td className="table-data">{student.mensagem || "N/A"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
