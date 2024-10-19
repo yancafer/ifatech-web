@@ -3,6 +3,7 @@ import { supabase } from "../../connections/supabaseClient";
 import * as XLSX from "xlsx";
 import QRCode from "qrcode";
 import axios from "axios";
+import "./styles/registerStudents.css";
 
 const RegisterStudents = () => {
   const [nome, setNome] = useState("");
@@ -110,79 +111,99 @@ const RegisterStudents = () => {
   };
 
   return (
-    <div>
-      <h2>Cadastrar Estudantes</h2>
-      <form onSubmit={handleUpload}>
-        <div>
-          <label>Nome:</label>
-          <input
-            type="text"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            required
-          />
+    <div className="register-students">
+      <div className="form-container">
+        <div className="form-section">
+          <h2 className="register-title">Cadastrar Estudantes</h2>
+          <form onSubmit={handleUpload} className="register-form">
+            <div className="form-group">
+              <label className="form-label">Nome:</label>
+              <input
+                type="text"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Curso:</label>
+              <select
+                value={curso}
+                onChange={(e) => setCurso(e.target.value)}
+                required
+                className="form-select"
+              >
+                <option value="">Selecione o curso</option>
+                <option value="Biotecnologia">Biotecnologia</option>
+                <option value="Alimentos">Alimentos</option>
+                <option value="Agropecuária">Agropecuária</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Série:</label>
+              <input
+                type="text"
+                value={serie}
+                onChange={(e) => setSerie(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Telefone:</label>
+              <input
+                type="tel"
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Email:</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Matrícula:</label>
+              <input
+                type="text"
+                value={matricula}
+                onChange={(e) => setMatricula(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+            <button type="submit" className="register-button">
+              Cadastrar Estudante
+            </button>
+          </form>
         </div>
-        <div>
-          <label>Curso:</label>
-          <select
-            value={curso}
-            onChange={(e) => setCurso(e.target.value)}
-            required
-          >
-            <option value="">Selecione o curso</option>
-            <option value="Biotecnologia">Biotecnologia</option>
-            <option value="Alimentos">Alimentos</option>
-            <option value="Agropecuária">Agropecuária</option>
-          </select>
-        </div>
-        <div>
-          <label>Série:</label>
-          <input
-            type="text"
-            value={serie}
-            onChange={(e) => setSerie(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Telefone:</label>
-          <input
-            type="tel"
-            value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Matrícula:</label>
-          <input
-            type="text"
-            value={matricula}
-            onChange={(e) => setMatricula(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Cadastrar Estudante</button>
-      </form>
 
-      <h2>Upload da Planilha de Estudantes</h2>
-      <input
-        type="file"
-        accept=".xlsx, .xls"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-      {file && (
-        <button onClick={() => processFile(file)}>Processar Planilha</button>
-      )}
+        <div className="upload-section">
+          <h2 className="upload-title">Upload da Planilha</h2>
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="file-input"
+          />
+          {file && (
+            <button
+              onClick={() => processFile(file)}
+              className="process-button" // Mantendo o botão Processar sem alterações
+            >
+              Processar
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
