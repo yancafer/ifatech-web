@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { supabase } from "../../connections/supabaseClient"; // Conexão com o Supabase
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-import './login.css'; // Estilos personalizados
+import "react-toastify/dist/ReactToastify.css";
+import "./login.css"; // Estilos personalizados
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -80,26 +80,32 @@ function Login() {
         <div className="loader"></div> // Exibir apenas o loader durante o login
       ) : (
         <div className="login-container">
-          <h1>Login</h1>
-          {error && <p style={{ color: "red" }}>{error}</p>} {/* Exibir erros */}
-          <div>
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Digite seu email"
-            />
+          <div className="login-box">
+            <h2>Faça o Login e comece a usar!</h2>
+            {error && <p style={{ color: "red", marginTop: "0.6rem" }}>{error}</p>}
+            {/* Exibir erros */}
+            <div className="input-login">
+              <label>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Digite seu email"
+                className="input-email"
+              />
 
-            <label>Senha</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Digite sua senha"
-            />
+              <label>Senha</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Digite sua senha"
+              />
 
-            <button onClick={loginUser}>Entrar</button>
+              <button onClick={loginUser} className="button-login">
+                Entrar
+              </button>
+            </div>
           </div>
         </div>
       )}
