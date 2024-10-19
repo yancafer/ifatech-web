@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../connections/supabaseClient";
+import "./styles/filesStudents.css";
 
 function FilesStudents() {
   const [students, setStudents] = useState([]);
@@ -12,6 +13,9 @@ function FilesStudents() {
     Email: "",
     Matrícula: "",
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 20;
 
   useEffect(() => {
     fetchStudents();
@@ -60,104 +64,164 @@ function FilesStudents() {
     }
   };
 
+  // Paginação
+  const indexOfLastStudent = currentPage * studentsPerPage;
+  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
+  const currentStudents = students.slice(
+    indexOfFirstStudent,
+    indexOfLastStudent
+  );
+
+  const totalPages = Math.ceil(students.length / studentsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
-    <div>
-      <h1>Alunos Cadastrados</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Curso</th>
-            <th>Série</th>
-            <th>Telefone</th>
-            <th>Email</th>
-            <th>Matrícula</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students.map((student) => (
-            <tr key={student.id}>
-              {editStudentId === student.id ? (
-                <>
-                  <td>
-                    <input
-                      value={newData.Nome}
-                      onChange={(e) =>
-                        setNewData({ ...newData, Nome: e.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <select
-                      value={newData.Curso}
-                      onChange={(e) =>
-                        setNewData({ ...newData, Curso: e.target.value })
-                      }
-                    >
-                      <option value="Biotecnologia">Biotecnologia</option>
-                      <option value="Alimentos">Alimentos</option>
-                      <option value="Agropecuária">Agropecuária</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input
-                      value={newData.Série}
-                      onChange={(e) =>
-                        setNewData({ ...newData, Série: e.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={newData.Telefone}
-                      onChange={(e) =>
-                        setNewData({ ...newData, Telefone: e.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={newData.Email}
-                      onChange={(e) =>
-                        setNewData({ ...newData, Email: e.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <input
-                      value={newData.Matrícula}
-                      onChange={(e) =>
-                        setNewData({ ...newData, Matrícula: e.target.value })
-                      }
-                    />
-                  </td>
-                  <td>
-                    <button onClick={() => handleUpdate(student.id)}>
-                      Salvar
-                    </button>
-                  </td>
-                </>
-              ) : (
-                <>
-                  <td>{student.Nome}</td>
-                  <td>{student.Curso}</td>
-                  <td>{student.Série}</td>
-                  <td>{student.Telefone}</td>
-                  <td>{student.Email}</td>
-                  <td>{student.Matrícula}</td>
-                  <td>
-                    <button onClick={() => handleEdit(student)}>Editar</button>
-                    <button onClick={() => handleDelete(student.id)}>
-                      Excluir
-                    </button>
-                  </td>
-                </>
-              )}
+    <div className="page-wrapper">
+      <div className="content">
+        <h1 className="page-title">Alunos Cadastrados</h1>
+        <table className="students-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Curso</th>
+              <th>Série</th>
+              <th>Telefone</th>
+              <th>Email</th>
+              <th>Matrícula</th>
+              <th>Ações</th>
             </tr>
+          </thead>
+          <tbody>
+            {currentStudents.map((student) => (
+              <tr key={student.id}>
+                {editStudentId === student.id ? (
+                  <>
+                    <td>
+                      <input
+                        className="input-field"
+                        value={newData.Nome}
+                        onChange={(e) =>
+                          setNewData({ ...newData, Nome: e.target.value })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <select
+                        className="input-field"
+                        value={newData.Curso}
+                        onChange={(e) =>
+                          setNewData({ ...newData, Curso: e.target.value })
+                        }
+                      >
+                        <option value="Biotecnologia">Biotecnologia</option>
+                        <option value="Alimentos">Alimentos</option>
+                        <option value="Agropecuária">Agropecuária</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        className="input-field"
+                        value={newData.Série}
+                        onChange={(e) =>
+                          setNewData({ ...newData, Série: e.target.value })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="input-field"
+                        value={newData.Telefone}
+                        onChange={(e) =>
+                          setNewData({ ...newData, Telefone: e.target.value })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="input-field"
+                        value={newData.Email}
+                        onChange={(e) =>
+                          setNewData({ ...newData, Email: e.target.value })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        className="input-field"
+                        value={newData.Matrícula}
+                        onChange={(e) =>
+                          setNewData({ ...newData, Matrícula: e.target.value })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <button
+                        className="btn"
+                        onClick={() => handleUpdate(student.id)}
+                      >
+                        Salvar
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>{student.Nome}</td>
+                    <td>{student.Curso}</td>
+                    <td>{student.Série}</td>
+                    <td>{student.Telefone}</td>
+                    <td>{student.Email}</td>
+                    <td>{student.Matrícula}</td>
+                    <td>
+                      <div className="actions">
+                        <button
+                          className="btn"
+                          onClick={() => handleEdit(student)}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          className="btn"
+                          onClick={() => handleDelete(student.id)}
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Paginação */}
+        <div className="pagination">
+          <button
+            className="btn"
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              className="btn"
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </button>
           ))}
-        </tbody>
-      </table>
+          <button
+            className="btn"
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Próximo
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
