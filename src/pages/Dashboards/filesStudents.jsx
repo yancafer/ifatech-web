@@ -14,6 +14,7 @@ function FilesStudents() {
     Matrícula: "",
   });
 
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const studentsPerPage = 10;
 
@@ -26,16 +27,7 @@ function FilesStudents() {
     if (error) {
       console.error("Erro ao buscar alunos:", error);
     } else {
-      setStudents(data);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    const { error } = await supabase.from("students").delete().eq("id", id);
-    if (error) {
-      console.error("Erro ao excluir aluno:", error);
-    } else {
-      fetchStudents();
+      setStudents(data.sort((a, b) => a.Nome.localeCompare(b.Nome)));
     }
   };
 
@@ -52,34 +44,74 @@ function FilesStudents() {
   };
 
   const handleUpdate = async (id) => {
-    const { error } = await supabase
+    const { Nome, Curso, Série, Telefone, Email } = newData;
+
+    const updatedData = {
+      Nome,
+      Curso,
+      Série,
+      Telefone,
+      Email,
+    };
+
+    const { data, error } = await supabase
       .from("students")
-      .update(newData)
+      .update(updatedData)
       .eq("id", id);
+
     if (error) {
       console.error("Erro ao atualizar aluno:", error);
+      alert(`Erro: ${error.message}`);
     } else {
+      alert("Aluno atualizado com sucesso!");
+      fetchStudents();
       setEditStudentId(null);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const { error } = await supabase.from("students").delete().eq("id", id);
+
+    if (error) {
+      console.error("Erro ao excluir aluno:", error);
+      alert(`Erro: ${error.message}`);
+    } else {
+      alert("Aluno excluído com sucesso!");
       fetchStudents();
     }
   };
 
-  // Paginação
+  const filteredStudents = students.filter((student) =>
+    student.Nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const indexOfLastStudent = currentPage * studentsPerPage;
   const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
-  const currentStudents = students.slice(
+  const currentStudents = filteredStudents.slice(
     indexOfFirstStudent,
     indexOfLastStudent
   );
 
-  const totalPages = Math.ceil(students.length / studentsPerPage);
+  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="page-wrapper">
       <div className="content">
-        <h1 className="page-title">Alunos Cadastrados</h1>
+        <div className="header-container">
+          <h1 className="page-title">Alunos Cadastrados</h1>
+          <input
+            type="text"
+            placeholder="Buscar aluno..."
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
+        </div>
         <table className="students-table">
           <thead>
             <tr>
@@ -150,9 +182,7 @@ function FilesStudents() {
                       <input
                         className="input-field"
                         value={newData.Matrícula}
-                        onChange={(e) =>
-                          setNewData({ ...newData, Matrícula: e.target.value })
-                        }
+                        readOnly
                       />
                     </td>
                     <td>
@@ -195,7 +225,6 @@ function FilesStudents() {
           </tbody>
         </table>
 
-        {/* Paginação */}
         <div className="pagination">
           <button
             className="btn"
