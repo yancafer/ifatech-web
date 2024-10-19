@@ -14,6 +14,7 @@ const RegisterStudents = () => {
   const [matricula, setMatricula] = useState("");
   const [file, setFile] = useState(null);
 
+  // Função para gerar o QR Code e fazer upload para o Cloudinary
   const generateQRCodeAndUpload = async (matricula) => {
     try {
       const matriculaString = String(matricula);
@@ -44,10 +45,13 @@ const RegisterStudents = () => {
     }
   };
 
+  // Função para lidar com o envio de dados do aluno
   const handleUpload = async (e) => {
     e.preventDefault();
     try {
       const qrCodeURL = await generateQRCodeAndUpload(matricula);
+      const dataRecebimento = new Date();
+      dataRecebimento.setDate(dataRecebimento.getDate() - 1); // Um dia anterior à data atual
       const { data, error } = await supabase.from("students").insert([
         {
           Nome: nome,
@@ -57,6 +61,7 @@ const RegisterStudents = () => {
           Email: email,
           Matrícula: matricula,
           qr_code_url: qrCodeURL,
+          data_recebimento: dataRecebimento.toISOString().split("T")[0], // Formato YYYY-MM-DD
         },
       ]);
       if (error) {
@@ -68,6 +73,7 @@ const RegisterStudents = () => {
     }
   };
 
+  // Função para processar o arquivo Excel
   const processFile = async (file) => {
     try {
       const reader = new FileReader();
@@ -87,12 +93,15 @@ const RegisterStudents = () => {
     }
   };
 
+  // Função para fazer upload de estudantes a partir do arquivo Excel
   const handleUploadCSV = async (student) => {
     try {
       if (!student.Matrícula) {
         throw new Error("Matrícula inválida ou vazia");
       }
       const qrCodeURL = await generateQRCodeAndUpload(student.Matrícula);
+      const dataRecebimento = new Date();
+      dataRecebimento.setDate(dataRecebimento.getDate() - 1); // Um dia anterior à data atual
       const { data, error } = await supabase.from("students").insert([
         {
           Nome: student.Nome,
@@ -102,6 +111,7 @@ const RegisterStudents = () => {
           Email: student.Email,
           Matrícula: student.Matrícula,
           qr_code_url: qrCodeURL,
+          data_recebimento: dataRecebimento.toISOString().split("T")[0], // Formato YYYY-MM-DD
         },
       ]);
       if (error) throw error;
@@ -197,7 +207,7 @@ const RegisterStudents = () => {
           {file && (
             <button
               onClick={() => processFile(file)}
-              className="process-button" // Mantendo o botão Processar sem alterações
+              className="process-button"
             >
               Processar
             </button>
