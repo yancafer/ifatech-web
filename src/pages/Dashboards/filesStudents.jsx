@@ -216,6 +216,15 @@ function FilesStudents() {
                         >
                           Excluir
                         </button>
+                        <button
+                          className="btn"
+                          onClick={() => {
+                            // Redireciona para a URL do QR Code do aluno
+                            window.open(student.qr_code_url, "_blank");
+                          }}
+                        >
+                          QR Code
+                        </button>
                       </div>
                     </td>
                   </>
