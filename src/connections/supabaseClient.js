@@ -9,8 +9,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // Exemplo de chamada ao Supabase
 const fetchData = async () => {
   const { data, error } = await supabase.from("sua_tabela").select("*");
-  console.log("Data:", data);
-  console.log("Error:", error);
 };
 
 // Chame a função após a inicialização
