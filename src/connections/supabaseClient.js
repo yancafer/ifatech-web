@@ -1,7 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Use as variáveis de ambiente com o prefixo VITE_
+// Inicialização do cliente Supabase
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+console.log("Supabase URL:", supabaseUrl);
+console.log("Supabase Anon Key:", supabaseAnonKey);
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Exemplo de chamada ao Supabase
+const fetchData = async () => {
+  const { data, error } = await supabase.from("sua_tabela").select("*");
+  console.log("Data:", data);
+  console.log("Error:", error);
+};
+
+// Chame a função após a inicialização
+fetchData();
