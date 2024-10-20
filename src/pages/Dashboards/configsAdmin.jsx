@@ -31,15 +31,23 @@ function ConfigsAdmin() {
       if (!authData?.user)
         throw new Error("Erro ao registrar usuário. Tente novamente.");
 
-      const { error: profileError } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("profiles")
-        .insert([{ id: authData.user.id, email: adminData.email }]);
+        .insert([
+          { id: authData.user.id, email: adminData.email, role: "admin" },
+        ]);
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.log("Erro ao inserir perfil:", profileError); // Log do erro
+        throw profileError;
+      }
+
+      console.log("Dados do perfil criado:", profileData); // Log dos dados de perfil
 
       setAdminData({ email: "", senha: "" });
       toast.success("Admin cadastrado com sucesso!");
     } catch (error) {
+      console.error("Erro ao cadastrar o admin:", error); // Log do erro geral
       toast.error("Erro ao cadastrar o admin. Tente novamente.");
     }
   };
