@@ -14,8 +14,7 @@ const RegisterStudents = () => {
   const [matricula, setMatricula] = useState("");
   const [file, setFile] = useState(null);
 
-  // Função para gerar o QR Code e fazer upload para o Cloudinary
-  const generateQRCodeAndUpload = async (matricula) => {
+  const generateQRCodeAndUpload = async (matricula, nome) => {
     try {
       const matriculaString = String(matricula);
       const qrCodeDataURL = await QRCode.toDataURL(matriculaString);
@@ -29,13 +28,19 @@ const RegisterStudents = () => {
         .split(":")[1]
         .split(";")[0];
       const byteArray = new Uint8Array(byteString.length);
+
       for (let i = 0; i < byteString.length; i++) {
         byteArray[i] = byteString.charCodeAt(i);
       }
+
       const qrBlob = new Blob([byteArray], { type: mimeString });
 
       formData.append("file", qrBlob);
       formData.append("upload_preset", cloudinaryUploadPreset);
+      formData.append("public_id", `${nome}_${matricula}`); // Renomeia o QR code
+
+      // Adicionando o tipo de arquivo
+      formData.append("resource_type", "image"); // Adicione esta linha
 
       const response = await axios.post(cloudinaryUploadURL, formData);
       return response.data.secure_url;
@@ -45,13 +50,13 @@ const RegisterStudents = () => {
     }
   };
 
-  // Função para lidar com o envio de dados do aluno
   const handleUpload = async (e) => {
     e.preventDefault();
     try {
-      const qrCodeURL = await generateQRCodeAndUpload(matricula);
+      const qrCodeURL = await generateQRCodeAndUpload(matricula, nome); // Passa o nome
       const dataRecebimento = new Date();
-      dataRecebimento.setDate(dataRecebimento.getDate() - 1); // Um dia anterior à data atual
+      dataRecebimento.setDate(dataRecebimento.getDate() - 1);
+
       const { data, error } = await supabase.from("students").insert([
         {
           Nome: nome,
@@ -61,12 +66,14 @@ const RegisterStudents = () => {
           Email: email,
           Matrícula: matricula,
           qr_code_url: qrCodeURL,
-          data_recebimento: dataRecebimento.toISOString().split("T")[0], // Formato YYYY-MM-DD
+          data_recebimento: dataRecebimento.toISOString().split("T")[0],
         },
       ]);
+
       if (error) {
         throw error;
       }
+
       alert("Estudante cadastrado com sucesso!");
     } catch (error) {
       alert(`Erro: ${error.message}`);
@@ -93,15 +100,19 @@ const RegisterStudents = () => {
     }
   };
 
-  // Função para fazer upload de estudantes a partir do arquivo Excel
   const handleUploadCSV = async (student) => {
     try {
       if (!student.Matrícula) {
         throw new Error("Matrícula inválida ou vazia");
       }
-      const qrCodeURL = await generateQRCodeAndUpload(student.Matrícula);
+
+      const qrCodeURL = await generateQRCodeAndUpload(
+        student.Matrícula,
+        student.Nome
+      ); // Passa o nome do aluno
       const dataRecebimento = new Date();
-      dataRecebimento.setDate(dataRecebimento.getDate() - 1); // Um dia anterior à data atual
+      dataRecebimento.setDate(dataRecebimento.getDate() - 1);
+
       const { data, error } = await supabase.from("students").insert([
         {
           Nome: student.Nome,
@@ -111,9 +122,10 @@ const RegisterStudents = () => {
           Email: student.Email,
           Matrícula: student.Matrícula,
           qr_code_url: qrCodeURL,
-          data_recebimento: dataRecebimento.toISOString().split("T")[0], // Formato YYYY-MM-DD
+          data_recebimento: dataRecebimento.toISOString().split("T")[0],
         },
       ]);
+
       if (error) throw error;
     } catch (error) {
       console.error("Erro ao inserir estudante do XLSX:", error.message);
