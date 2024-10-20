@@ -21,7 +21,7 @@ const RegisterStudents = () => {
       const cloudinaryUploadURL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
       const cloudinaryUploadPreset = import.meta.env
         .VITE_CLOUDINARY_UPLOAD_PRESET;
-      const formData = new FormData();
+
       const byteString = atob(qrCodeDataURL.split(",")[1]);
       const mimeString = qrCodeDataURL
         .split(",")[0]
@@ -34,18 +34,20 @@ const RegisterStudents = () => {
       }
 
       const qrBlob = new Blob([byteArray], { type: mimeString });
+      const formData = new FormData();
 
-      formData.append("file", qrBlob);
+      formData.append("file", qrBlob, `${nome}_${matricula}.png`); // Renomeia o QR code
       formData.append("upload_preset", cloudinaryUploadPreset);
       formData.append("public_id", `${nome}_${matricula}`); // Renomeia o QR code
-
-      // Adicionando o tipo de arquivo
-      formData.append("resource_type", "image"); // Adicione esta linha
+      formData.append("resource_type", "image");
 
       const response = await axios.post(cloudinaryUploadURL, formData);
       return response.data.secure_url;
     } catch (error) {
-      console.error("Erro ao gerar ou fazer upload do QR code:", error);
+      console.error(
+        "Erro ao gerar ou fazer upload do QR code:",
+        error.response ? error.response.data : error.message
+      );
       throw error;
     }
   };
@@ -53,7 +55,7 @@ const RegisterStudents = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
     try {
-      const qrCodeURL = await generateQRCodeAndUpload(matricula, nome); // Passa o nome
+      const qrCodeURL = await generateQRCodeAndUpload(matricula, nome);
       const dataRecebimento = new Date();
       dataRecebimento.setDate(dataRecebimento.getDate() - 1);
 
@@ -80,21 +82,22 @@ const RegisterStudents = () => {
     }
   };
 
-  // Função para processar o arquivo Excel
   const processFile = async (file) => {
     try {
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         const data = new Uint8Array(event.target.result);
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
         for (const student of worksheet) {
-          handleUploadCSV(student);
+          await handleUploadCSV(student); // Aguarda cada chamada antes de prosseguir
         }
+
+        alert("Planilha processada com sucesso!");
       };
       reader.readAsArrayBuffer(file);
-      alert("Planilha processada com sucesso!");
     } catch (error) {
       console.error("Erro ao processar a planilha:", error.message);
     }
@@ -109,7 +112,7 @@ const RegisterStudents = () => {
       const qrCodeURL = await generateQRCodeAndUpload(
         student.Matrícula,
         student.Nome
-      ); // Passa o nome do aluno
+      );
       const dataRecebimento = new Date();
       dataRecebimento.setDate(dataRecebimento.getDate() - 1);
 
