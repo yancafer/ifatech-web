@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./login.css"; // Estilos personalizados
+import logoIfac from "../../assets/ifacLogo.png"; // Logo do IFAC
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -81,9 +82,10 @@ function Login() {
       ) : (
         <div className="login-container">
           <div className="login-box">
-            <h2>Faça o Login e comece a usar!</h2>
-            {error && <p style={{ color: "red", marginTop: "0.6rem" }}>{error}</p>}
-            {/* Exibir erros */}
+            <img src={logoIfac} alt="Logo do IFAC" className="logo-ifac" />
+            {error && (
+              <p style={{ color: "red", marginTop: "0.6rem" }}>{error}</p>
+            )}
             <div className="input-login">
               <label>Email</label>
               <input
@@ -93,7 +95,6 @@ function Login() {
                 placeholder="Digite seu email"
                 className="input-email"
               />
-
               <label>Senha</label>
               <input
                 type="password"
@@ -101,7 +102,6 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Digite sua senha"
               />
-
               <button onClick={loginUser} className="button-login">
                 Entrar
               </button>

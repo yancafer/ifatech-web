@@ -1,17 +1,10 @@
-/* Loader centralizado na tela e maior */
 .loader {
     border: 8px solid #f3f3f3;
-    /* Cor do fundo */
     border-top: 8px solid #3498db;
-    /* Cor do spinner */
     border-radius: 50%;
     width: 100px;
-    /* Aumentado para 100px */
     height: 100px;
-    /* Aumentado para 100px */
     animation: spin 2s linear infinite;
-
-    /* Centralizando o loader */
     position: absolute;
     top: 40%;
     left: 45%;
@@ -46,9 +39,11 @@
     align-items: center;
     justify-content: center;
     background-color: #ECECEC;
-    width: 25rem;
-    height: 20rem;
     border-radius: 5px;
+}
+
+.logo-ifac{
+    width: 4rem;
 }
 
 .title-home {
