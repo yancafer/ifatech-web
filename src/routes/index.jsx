@@ -9,6 +9,7 @@ import CheckQRCode from "../pages/Dashboards/checkQRCode";
 import FilesStudents from "../pages/Dashboards/filesStudents";
 import RegisterStudents from "../pages/Dashboards/registerStudents";
 import Report from "../pages/Dashboards/report";
+import ConfigsAdmin from "../pages/Dashboards/configsAdmin";
 
 function RoutesApp() {
   return (
@@ -22,6 +23,7 @@ function RoutesApp() {
         <Route path="/filesstudents" element={<Private> <FilesStudents/> </Private>} />
         <Route path="/registerstudets" element={<Private> <RegisterStudents/> </Private>} />
         <Route path="/reports" element={<Private> <Report/> </Private>} />
+        <Route path="/configsadmin" element={<Private> <ConfigsAdmin/> </Private>} />
 
       </Routes>
     </Router>
