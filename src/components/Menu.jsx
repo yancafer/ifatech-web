@@ -43,6 +43,12 @@ function Menu() {
             Cadastrar
           </Link>
         </li>
+
+        <li>
+          <Link className="menu-font" to="/configsadmin">
+            Configurações
+          </Link>
+        </li>
         <li>
           <Link onClick={handleLogout} className="menu-font">
             Sair
