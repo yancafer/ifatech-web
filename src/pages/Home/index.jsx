@@ -35,10 +35,6 @@ function Home() {
             <button className="button-home" onClick={goToLogin}>
               Entrar
             </button>
-
-            <button className="button-home" onClick={goToSignUp}>
-              Cadastrar
-            </button>
           </div>
         </div>
       </div>

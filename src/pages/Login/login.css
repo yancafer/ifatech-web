@@ -39,11 +39,13 @@
     align-items: center;
     justify-content: center;
     background-color: #ECECEC;
+    height: 31rem;
+    width: 30rem;
     border-radius: 5px;
 }
 
 .logo-ifac{
-    width: 4rem;
+    width: 8rem;
 }
 
 .title-home {
